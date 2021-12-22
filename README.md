@@ -1,10 +1,10 @@
-# NextJS Sample App
+# Demo tax provider
 
-This demo includes all of the files necessary to get started with a basic, hello world app. This app was built using NextJS, BigDesign, Typescript, and React.
+This is a demo tax provider built with the BigCommerce node sample app
 
 ## App Installation
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/bigcommerce/sample-app-nodejs)
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/hatertron3000/demo-tax-provider)
 
 To get the app running locally, follow these instructions:
 

@@ -3,6 +3,9 @@
   "description": "A sample NodeJS app installable on BigCommerce stores",
   "repository": "https://github.com/bigcommerce/sample-app-nodejs",
   "keywords": ["Node", "Heroku"],
+  "engines": {
+    "node": "14.x"
+  },
   "addons": ["cleardb:ignite"],
   "env": {
     "CLIENT_ID": {
