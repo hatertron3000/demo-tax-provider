@@ -19,7 +19,6 @@ connection.on('error', function (err) {
     // Reconnect to DB on server disconnect
     // https://github.com/mysqljs/mysql#server-disconnects
     if (err.code === 'PROTOCOL_CONNECTION_LOST') {
-        console.log('Detected mysql disconnect. Attempting reconnection.');
         connection = mysql.createConnection(process.env.CLEARDB_DATABASE_URL ? process.env.CLEARDB_DATABASE_URL : MYSQL_CONFIG);
         query = promisify(connection.query.bind(connection));
     }
