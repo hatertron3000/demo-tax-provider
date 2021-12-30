@@ -12,8 +12,18 @@ const MYSQL_CONFIG = {
 
 // For use with Heroku ClearDB
 // Other mysql: https://www.npmjs.com/package/mysql#establishing-connections
-const connection = mysql.createConnection(process.env.CLEARDB_DATABASE_URL ? process.env.CLEARDB_DATABASE_URL : MYSQL_CONFIG);
-const query = promisify(connection.query.bind(connection));
+let connection = mysql.createConnection(process.env.CLEARDB_DATABASE_URL ? process.env.CLEARDB_DATABASE_URL : MYSQL_CONFIG);
+let query = promisify(connection.query.bind(connection));
+
+connection.on('error', function (err) {
+    // Reconnect to DB on server disconnect
+    // https://github.com/mysqljs/mysql#server-disconnects
+    if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+        console.log('Detected mysql disconnect. Attempting reconnection.');
+        connection = mysql.createConnection(process.env.CLEARDB_DATABASE_URL ? process.env.CLEARDB_DATABASE_URL : MYSQL_CONFIG);
+        query = promisify(connection.query.bind(connection));
+    }
+})
 
 // Use setUser for storing global user data (persists between installs)
 export async function setUser({ user }: SessionProps) {
