@@ -30,10 +30,10 @@
       "description": "The tax provider id provided by BigCommerce. See https://developer.bigcommerce.com/api-docs/providers/tax#sharing-provider-details-with-bigcommerce"
     },
     "TAX_PROVIDER_USERNAME": {
-      "description": "Username for tax provider basic auth. See https://developer.bigcommerce.com/api-docs/providers/tax#establishing-a-connection"
+      "description": "Username for tax provider basic auth. Do not use any colons. See https://developer.bigcommerce.com/api-docs/providers/tax#establishing-a-connection"
     },
     "TAX_PROVIDER_PASSWORD": {
-      "description": "Password for tax provider basic auth. See https://developer.bigcommerce.com/api-docs/providers/tax#establishing-a-connection"
+      "description": "Password for tax provider basic auth. Do not use any colons. See https://developer.bigcommerce.com/api-docs/providers/tax#establishing-a-connection"
     }
   },
   "scripts": {
