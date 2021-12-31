@@ -1,12 +1,13 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import { EstimateRequest, EstimateRequestDocumentItem, EstimateRequestDocumentPrice, EstimateResponse, EstimateResponseDocumentItem, EstimateResponseDocumentPrice } from '../../../types'
 import { taxProviderBasicAuth } from '../../../lib/auth'
+import { EstimateRequest, EstimateRequestDocumentItem, EstimateResponse, EstimateResponseDocumentItem } from '../../../types'
 
 const calculateTax = (item: EstimateRequestDocumentItem): EstimateResponseDocumentItem => {
     // Oversimplified tax calculation: All prices get 10% tax applied unless the item is exempt
     const { id, price, tax_exempt, type, tax_class, quantity} = item
     const { tax_inclusive, amount } = price
     const taxRate = .1
+
     return {
         id,
         price: {
@@ -41,6 +42,7 @@ export default async function estimate(req: NextApiRequest, res: NextApiResponse
     try {
         if (!taxProviderBasicAuth(req)) {
             res.status(401).json({ "error": "Unauthorized" })
+            
             return
         }
         const { id, documents } = req.body as EstimateRequest
