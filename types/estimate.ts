@@ -29,7 +29,7 @@ export interface EstimateRequestDocumentItem {
     name?: string;
     price: EstimateRequestDocumentPrice;
     quantity: number;
-    tax_class: EstimateDocumentItemTaxClass;
+    tax_class?: EstimateDocumentItemTaxClass;
     tax_exempt?: boolean;
     type: EstimateDocumentItemType;
     wrapping?: any;
@@ -75,7 +75,7 @@ export interface EstimateResponseTaxSummaryItem {
     name: string;
     rate: number;
     amount: number;
-    tax_class: EstimateDocumentItemTaxClass;
+    tax_class?: EstimateDocumentItemTaxClass;
     id: string;
 }
 
