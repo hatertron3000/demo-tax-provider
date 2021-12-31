@@ -25,6 +25,15 @@
     "JWT_KEY":{
       "description": "Key the app will use for signing JWT. Can safely leave unchanged.",
       "generator": "secret"
+    },
+    "TAX_PROVIDER_ID": {
+      "description": "The tax provider id provided by BigCommerce. See https://developer.bigcommerce.com/api-docs/providers/tax#sharing-provider-details-with-bigcommerce"
+    },
+    "TAX_PROVIDER_USERNAME": {
+      "description": "Username for tax provider basic auth. See https://developer.bigcommerce.com/api-docs/providers/tax#establishing-a-connection"
+    },
+    "TAX_PROVIDER_PASSWORD": {
+      "description": "Password for tax provider basic auth. See https://developer.bigcommerce.com/api-docs/providers/tax#establishing-a-connection"
     }
   },
   "scripts": {
