@@ -4,7 +4,7 @@ import * as BigCommerce from 'node-bigcommerce';
 import { QueryParams, SessionContextProps, SessionProps } from '../types';
 import db from './db';
 
-const { AUTH_CALLBACK, CLIENT_ID, CLIENT_SECRET, JWT_KEY } = process.env;
+const { AUTH_CALLBACK, CLIENT_ID, CLIENT_SECRET, JWT_KEY, TAX_PROVIDER_USERNAME, TAX_PROVIDER_PASSWORD } = process.env;
 
 // Create BigCommerce instance
 // https://github.com/bigcommerce/node-bigcommerce/
@@ -90,4 +90,21 @@ export async function removeUserData(session: SessionProps) {
 export async function logoutUser({ storeHash, user }: SessionContextProps) {
     const session = { context: `store/${storeHash}`, user };
     await db.deleteUser(session);
+}
+
+export function taxProviderBasicAuth(req: NextApiRequest) {
+    const { authorization } = req.headers
+    
+    if(!authorization)
+        return false
+    
+    const encodedAuth = authorization.split(' ')[1]
+    const [username, password] = Buffer.from(encodedAuth, 'base64')
+        .toString()    
+        .split(':')
+
+    if(username == TAX_PROVIDER_USERNAME && password == TAX_PROVIDER_PASSWORD)
+        return true
+    
+    return false
 }
