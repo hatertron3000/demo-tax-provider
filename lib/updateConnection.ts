@@ -1,5 +1,5 @@
-import { bigcommerceClient } from "./auth";
 import { SessionProps } from "@types";
+import { bigcommerceClient } from "./auth";
 
 export async function updateConnection(session: SessionProps) {
     try {
