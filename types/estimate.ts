@@ -82,6 +82,7 @@ export interface EstimateResponseTaxSummaryItem {
 export interface EstimateResponseDocumentPrice {
     amount_inclusive: number;
     amount_exclusive: number;
+    total_tax: number;
     tax_rate: number;
     sales_tax_summary: EstimateResponseTaxSummaryItem[]
 }

@@ -104,5 +104,7 @@ dist
 .tern-port
 
 # ngrok
-
 ngrok
+
+# notes and ideas
+.idea

@@ -7,20 +7,24 @@ const calculateTax = (item: EstimateRequestDocumentItem): EstimateResponseDocume
     const { id, price, tax_exempt, type, tax_class, quantity} = item
     const { tax_inclusive, amount } = price
     const taxRate = .1
+    const amount_inclusive = tax_exempt
+        ? amount
+        : tax_inclusive
+            ? amount * quantity
+            : (amount + (amount * taxRate)) * quantity
+    const amount_exclusive = tax_exempt
+        ? amount * quantity
+        : tax_inclusive
+            ? (amount / (1 + taxRate)) * quantity
+            : amount * quantity
+    const total_tax = amount_inclusive - amount_exclusive
 
     return {
         id,
         price: {
-            amount_inclusive: tax_exempt
-                ? amount
-                : tax_inclusive
-                    ? amount * quantity
-                    : (amount + (amount * taxRate)) * quantity,
-            amount_exclusive: tax_exempt
-                ? amount * quantity
-                : tax_inclusive
-                    ? (amount / (1 + taxRate)) * quantity
-                    : amount * quantity,
+            amount_inclusive, 
+            amount_exclusive,
+            total_tax,
             tax_rate: taxRate,
             sales_tax_summary: [
                 {
