@@ -1,7 +1,7 @@
+import { round } from 'lodash'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { taxProviderBasicAuth } from '../../../lib/auth'
 import { EstimateRequest, EstimateRequestDocumentItem, EstimateResponse, EstimateResponseDocumentItem } from '../../../types'
-import { round } from 'lodash'
 
 const calculateTax = (item: EstimateRequestDocumentItem): EstimateResponseDocumentItem => {
     // Oversimplified tax calculation: All prices get 10% tax applied unless the item is exempt
@@ -19,7 +19,6 @@ const calculateTax = (item: EstimateRequestDocumentItem): EstimateResponseDocume
             ? (amount / (1 + taxRate)) * quantity
             : amount * quantity, 2)
     const total_tax = round(amount_inclusive - amount_exclusive, 2)
-    console.log(amount_inclusive, ' ', amount_exclusive, ' ', total_tax)
 
     return {
         id,
