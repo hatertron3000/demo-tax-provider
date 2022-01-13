@@ -30,7 +30,7 @@ const calculateTax = (item: EstimateRequestDocumentItem): EstimateResponseDocume
                 {
                     name: 'Hardcoded Tax Rate',
                     rate: taxRate,
-                    amount: total_tax * quantity,
+                    amount: total_tax,
                     tax_class,
                     id: 'Hardcoded Tax Rate ID'
                 }
