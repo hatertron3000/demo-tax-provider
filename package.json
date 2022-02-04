@@ -27,6 +27,8 @@
     "mysql": "^2.18.1",
     "next": "^11.1.3",
     "node-bigcommerce": "github:bigcommerce/node-bigcommerce",
+    "pino": "^7.6.5",
+    "pino-pretty": "^7.5.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "styled-components": "^5.3.3",

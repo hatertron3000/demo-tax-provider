@@ -1,7 +1,15 @@
 import { round } from 'lodash'
 import { NextApiRequest, NextApiResponse } from 'next'
+import { pino } from 'pino'
 import { taxProviderBasicAuth } from '../../../lib/auth'
 import { EstimateRequest, EstimateRequestDocumentItem, EstimateResponse, EstimateResponseDocumentItem } from '../../../types'
+
+const logger = pino({
+    transport: {
+        target: 'pino-pretty',
+        options: { destination: 1 }
+    }
+})
 
 const calculateTax = (item: EstimateRequestDocumentItem): EstimateResponseDocumentItem => {
     // Oversimplified tax calculation: All prices get 10% tax applied unless the item is exempt
@@ -49,6 +57,8 @@ export default async function estimate(req: NextApiRequest, res: NextApiResponse
             return
         }
         const { id, documents } = req.body as EstimateRequest
+
+        logger.info(`New rate request: ${ JSON.stringify(req.body) }`)
 
         const estimate: EstimateResponse = {
             id,
