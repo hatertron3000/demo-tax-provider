@@ -1,6 +1,6 @@
 import { round } from 'lodash'
-import pino from 'pino'
 import { NextApiRequest, NextApiResponse } from 'next'
+import { pino } from 'pino'
 import { taxProviderBasicAuth } from '../../../lib/auth'
 import { EstimateRequest, EstimateRequestDocumentItem, EstimateResponse, EstimateResponseDocumentItem } from '../../../types'
 
@@ -59,7 +59,7 @@ export default async function estimate(req: NextApiRequest, res: NextApiResponse
         const { id, documents } = req.body as EstimateRequest
 
         logger.info(`New rate request: ${ JSON.stringify(req.body) }`)
-        
+
         const estimate: EstimateResponse = {
             id,
             documents: documents.map(({
