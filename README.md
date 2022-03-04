@@ -135,8 +135,11 @@ To get the app running locally, clone the repo with `git clone https://github.co
 
 Once your app is running locally or on heroku, you may use [this Postman collection](https://documenter.getpostman.com/view/45334/UVXhqGyd) to test responses from the /api/tax/estimate endpoint.
 
-  
+### Delay Responses
 
+To simulate a delay in response, pass a string in the format `DELAY:TIME_IN_MS` where `TIME_IN_MS` is a number in the `customer.taxability_code` in the estimate request. See [BigCommerce documentation](https://support.bigcommerce.com/s/article/How-do-I-have-customers-with-a-tax-exempt-status) for more information on adding the taxability_code to customer accounts.
+
+  
 ## Usage with BigCommerce
 
   

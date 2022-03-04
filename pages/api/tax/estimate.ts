@@ -11,6 +11,25 @@ const logger = pino({
     }
 })
 
+const sleep = async (time: number): Promise<void> => {
+    return new Promise(resolve => setTimeout(resolve, time))
+}
+
+const getSleepTime = (req: EstimateRequest) => {
+    const { customer } = req
+    try {
+        if (customer.taxability_code.includes('DELAY:')) {
+            const sleepTime = parseInt(customer
+                .taxability_code
+                .split(':')[1])
+
+            return sleepTime
+        }
+    } catch (err) {
+        return 0
+    }
+}
+
 const calculateTax = (item: EstimateRequestDocumentItem): EstimateResponseDocumentItem => {
     // Oversimplified tax calculation: All prices get 10% tax applied unless the item is exempt
     const { id, price, tax_exempt, type, tax_class, quantity} = item
@@ -56,9 +75,19 @@ export default async function estimate(req: NextApiRequest, res: NextApiResponse
             
             return
         }
+        logger.info(`New rate request: ${JSON.stringify(req.body)}`)
+
+        const sleepTime = getSleepTime(req.body)
+        if (sleepTime) {
+            logger.info(`Delaying response for ${sleepTime}ms due to customer.taxability_code`)
+            await sleep(sleepTime)
+        }
+
+
+
         const { id, documents } = req.body as EstimateRequest
 
-        logger.info(`New rate request: ${ JSON.stringify(req.body) }`)
+
 
         const estimate: EstimateResponse = {
             id,
