@@ -19,7 +19,7 @@ export async function getCheckout(storeHash: string, checkoutId: string) {
 
         return checkout
     } catch (err) {
-        logger.error('Error getting checkout: ', err)
+        logger.error(`Error getting checkout: ${err}`)
 
         return
     }

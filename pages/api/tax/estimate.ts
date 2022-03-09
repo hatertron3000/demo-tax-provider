@@ -31,16 +31,29 @@ const getSleepTime = (req: EstimateRequest) => {
     }
 }
 
-const getStoreHashFromCustomer = (req: EstimateRequest) => {
+const getStoreHashFromCustomerBefore = (req: EstimateRequest) => {
     const { customer } = req
     try {
-        if (customer.taxability_code.includes('STORE_HASH:')) {
+        if (customer.taxability_code.includes('GET_CHECKOUT_BEFORE:')) {
             const storeHash = customer.taxability_code.split(':')[1]
 
             return storeHash
         }
     } catch (err) {
         return 
+    }
+}
+
+const getStoreHashFromCustomerAfter = (req: EstimateRequest) => {
+    const { customer } = req
+    try {
+        if (customer.taxability_code.includes('GET_CHECKOUT_AFTER:')) {
+            const storeHash = customer.taxability_code.split(':')[1]
+
+            return storeHash
+        }
+    } catch (err) {
+        return
     }
 }
 
@@ -100,10 +113,10 @@ export default async function estimate(req: NextApiRequest, res: NextApiResponse
         const { id, documents } = req.body as EstimateRequest
 
         // Debugging request loops
-        const storeHash = getStoreHashFromCustomer(req.body)
+        let storeHash = getStoreHashFromCustomerBefore(req.body)
 
         if (storeHash) {
-            logger.info(`Checkout request for ${id} for store ${storeHash}`)
+            logger.info(`Checkout request for ${id} for store ${storeHash} before responding to the estimate request.`)
             await getCheckout(storeHash, id)
         }
 
@@ -123,6 +136,15 @@ export default async function estimate(req: NextApiRequest, res: NextApiResponse
             }))
         }
         res.status(200).json(estimate)
+
+        storeHash = getStoreHashFromCustomerAfter(req.body)
+
+        if(storeHash) {
+            await sleep(50)
+            logger.info(`Checkout request for ${id} for store ${storeHash} after responding to the estimate request.`)
+            await getCheckout(storeHash, id)
+        }
+
     } catch (error) {
         const { message, response } = error;
         res.status(response?.status || 500).json({ message });

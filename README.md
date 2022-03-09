@@ -141,7 +141,7 @@ To simulate a delay in response, pass a string in the format `DELAY:TIME_IN_MS` 
 
 ### Query Checkouts
 
-As an attempt to debug an issue, the app may query BigCommerce for the checkout corresponding to a tax rate request by passing a string in the format `STORE_HASH:HASH` where `HASH` is the unique store hash for the store that generated the estimate request.
+As an attempt to debug an issue, the app may query BigCommerce for the checkout corresponding to a tax rate request before responding to the request by passing a string in the format `GET_CHECKOUT_BEFORE:HASH` where `HASH` is the unique store hash for the store that generated the estimate request. The app may make the same query after responding to the rate request by passing a string in the format `GET_CHECKOUT_AFTER:HASH`
 
   
 ## Usage with BigCommerce
