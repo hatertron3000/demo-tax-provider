@@ -1,7 +1,8 @@
 import { round } from 'lodash'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { pino } from 'pino'
-import { taxProviderBasicAuth } from '../../../lib/auth'
+import { taxProviderBasicAuth } from '@lib/auth'
+import { getCheckout } from '@lib/checkoutApi'
 import { EstimateRequest, EstimateRequestDocumentItem, EstimateResponse, EstimateResponseDocumentItem } from '../../../types'
 
 const logger = pino({
@@ -27,6 +28,19 @@ const getSleepTime = (req: EstimateRequest) => {
         }
     } catch (err) {
         return 0
+    }
+}
+
+const getStoreHashFromCustomer = (req: EstimateRequest) => {
+    const { customer } = req
+    try {
+        if (customer.taxability_code.includes('STORE_HASH:')) {
+            const storeHash = customer.taxability_code.split(':')[1]
+
+            return storeHash
+        }
+    } catch (err) {
+        return 
     }
 }
 
@@ -83,11 +97,15 @@ export default async function estimate(req: NextApiRequest, res: NextApiResponse
             await sleep(sleepTime)
         }
 
-
-
         const { id, documents } = req.body as EstimateRequest
 
+        // Debugging request loops
+        const storeHash = getStoreHashFromCustomer(req.body)
 
+        if (storeHash) {
+            logger.info(`Checkout request for ${id} for store ${storeHash}`)
+            await getCheckout(storeHash, id)
+        }
 
         const estimate: EstimateResponse = {
             id,

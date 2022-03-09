@@ -139,6 +139,10 @@ Once your app is running locally or on heroku, you may use [this Postman collect
 
 To simulate a delay in response, pass a string in the format `DELAY:TIME_IN_MS` where `TIME_IN_MS` is a number in the `customer.taxability_code` in the estimate request. See [BigCommerce documentation](https://support.bigcommerce.com/s/article/How-do-I-have-customers-with-a-tax-exempt-status) for more information on adding the taxability_code to customer accounts.
 
+### Query Checkouts
+
+As an attempt to debug an issue, the app may query BigCommerce for the checkout corresponding to a tax rate request by passing a string in the format `STORE_HASH:HASH` where `HASH` is the unique store hash for the store that generated the estimate request.
+
   
 ## Usage with BigCommerce
 
