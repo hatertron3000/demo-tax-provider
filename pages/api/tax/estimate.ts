@@ -65,13 +65,15 @@ const calculateTax = (item: EstimateRequestDocumentItem): EstimateResponseDocume
     const amount_inclusive = round(tax_exempt
         ? amount
         : tax_inclusive
-            ? amount * quantity
-            : (amount + (amount * taxRate)) * quantity, 2)
+            ? amount
+            : amount + (amount * taxRate)
+        , 2)
     const amount_exclusive = round(tax_exempt
         ? amount * quantity
         : tax_inclusive
-            ? (amount / (1 + taxRate)) * quantity
-            : amount * quantity, 2)
+            ? amount / (1 + taxRate)
+            : amount
+        , 2)
     const total_tax = round(amount_inclusive - amount_exclusive, 2)
 
     return {
