@@ -59,7 +59,7 @@ const getStoreHashFromCustomerAfter = (req: EstimateRequest) => {
 
 const calculateTax = (item: EstimateRequestDocumentItem): EstimateResponseDocumentItem => {
     // Oversimplified tax calculation: All prices get 10% tax applied unless the item is exempt
-    const { id, price, tax_exempt, type, tax_class, quantity} = item
+    const { id, price, tax_exempt, type, tax_class} = item
     const { tax_inclusive, amount } = price
     const taxRate = .1
     const amount_inclusive = round(tax_exempt
@@ -69,7 +69,7 @@ const calculateTax = (item: EstimateRequestDocumentItem): EstimateResponseDocume
             : amount + (amount * taxRate)
         , 2)
     const amount_exclusive = round(tax_exempt
-        ? amount * quantity
+        ? amount
         : tax_inclusive
             ? amount / (1 + taxRate)
             : amount
