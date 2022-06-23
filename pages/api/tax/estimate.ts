@@ -2,8 +2,9 @@ import { round } from 'lodash'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { pino } from 'pino'
 import { taxProviderBasicAuth } from '@lib/auth'
+import { getCart } from '@lib/cartApi'
 import { getCheckout } from '@lib/checkoutApi'
-import { EstimateRequest, EstimateRequestDocumentItem, EstimateResponse, EstimateResponseDocumentItem } from '../../../types'
+import { EstimateAction, EstimateRequest, EstimateRequestDocumentItem, EstimateResponse, EstimateResponseDocumentItem } from '../../../types'
 
 const logger = pino({
     transport: {
@@ -19,42 +20,38 @@ const sleep = async (time: number): Promise<void> => {
 const getSleepTime = (req: EstimateRequest) => {
     const { customer } = req
     try {
-        if (customer.taxability_code.includes('DELAY:')) {
-            const sleepTime = parseInt(customer
-                .taxability_code
-                .split(':')[1])
+        const sleepTime = parseInt(customer
+            .taxability_code
+            .split(':')[1])
 
-            return sleepTime
-        }
+        return sleepTime
     } catch (err) {
+
         return 0
     }
 }
 
-const getStoreHashFromCustomerBefore = (req: EstimateRequest) => {
-    const { customer } = req
-    try {
-        if (customer.taxability_code.includes('GET_CHECKOUT_BEFORE:')) {
-            const storeHash = customer.taxability_code.split(':')[1]
+const getStoreHashFromCustomer: (req: EstimateRequest) => string | void = function(req: EstimateRequest) {
+    const { taxability_code } = req.customer
+    if (!taxability_code.includes(':')) {
 
-            return storeHash
-        }
-    } catch (err) {
-        return 
+        return
+    }
+
+    const values = req.customer.taxability_code.split(':')
+    if (values[0] != EstimateAction.SLEEP) {
+        return values[1]
     }
 }
 
-const getStoreHashFromCustomerAfter = (req: EstimateRequest) => {
-    const { customer } = req
-    try {
-        if (customer.taxability_code.includes('GET_CHECKOUT_AFTER:')) {
-            const storeHash = customer.taxability_code.split(':')[1]
+const getActionFromCustomer: (req: EstimateRequest) => EstimateAction | void = function(req) {
+    const { taxability_code } = req.customer
+    if (!taxability_code.includes(':')) {
 
-            return storeHash
-        }
-    } catch (err) {
         return
     }
+
+    return req.customer.taxability_code.split(':')[0] as EstimateAction
 }
 
 const calculateTax = (item: EstimateRequestDocumentItem): EstimateResponseDocumentItem => {
@@ -106,21 +103,37 @@ export default async function estimate(req: NextApiRequest, res: NextApiResponse
         }
         logger.info(`New rate request: ${JSON.stringify(req.body)}`)
 
-        const sleepTime = getSleepTime(req.body)
-        if (sleepTime) {
+        const action = getActionFromCustomer(req.body)
+        
+        if (action === EstimateAction.SLEEP) {
+            const sleepTime = getSleepTime(req.body)
             logger.info(`Delaying response for ${sleepTime}ms due to customer.taxability_code`)
             await sleep(sleepTime)
         }
 
+
+
         const { id, documents } = req.body as EstimateRequest
 
         // Debugging request loops
-        let storeHash = getStoreHashFromCustomerBefore(req.body)
 
-        if (storeHash) {
-            logger.info(`Checkout request for ${id} for store ${storeHash} before responding to the estimate request.`)
-            await getCheckout(storeHash, id)
+        if (action === EstimateAction.GET_CHECKOUT_BEFORE) {
+            const storeHash = getStoreHashFromCustomer(req.body)
+            if (storeHash) {
+                logger.info(`Checkout request for ${id} for store ${storeHash} before responding to the estimate request.`)
+                await getCheckout(storeHash, id)
+            }
         }
+
+        if (action === EstimateAction.GET_CART_BEFORE) {
+            const storeHash = getStoreHashFromCustomer(req.body)
+            if (storeHash) {
+                logger.info(`Cart request for ${id} for store ${storeHash} before responding to the estimate request.`)
+                await getCart(storeHash, id)
+            }
+        }
+
+
 
         const estimate: EstimateResponse = {
             id,
@@ -139,13 +152,25 @@ export default async function estimate(req: NextApiRequest, res: NextApiResponse
         }
         res.status(200).json(estimate)
 
-        storeHash = getStoreHashFromCustomerAfter(req.body)
-
-        if(storeHash) {
-            await sleep(50)
-            logger.info(`Checkout request for ${id} for store ${storeHash} after responding to the estimate request.`)
-            await getCheckout(storeHash, id)
+        if (action === EstimateAction.GET_CHECKOUT_AFTER) {
+            const storeHash = getStoreHashFromCustomer(req.body)
+            if (storeHash) {
+                await sleep(50)
+                logger.info(`Checkout request for ${id} for store ${storeHash} after responding to the estimate request.`)
+                await getCheckout(storeHash, id)
+            }
         }
+
+        if (action === EstimateAction.GET_CART_AFTER) {
+            const storeHash = getStoreHashFromCustomer(req.body)
+            if (storeHash) {
+                await sleep(50)
+                logger.info(`Cart request for ${id} for store ${storeHash} after responding to the estimate request.`)
+                await getCart(storeHash, id)
+            }
+        }
+
+
 
     } catch (error) {
         const { message, response } = error;
