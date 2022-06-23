@@ -106,3 +106,11 @@ export interface EstimateResponse {
     id: string;
     documents: EstimateResponseDocument[]
 }
+
+export enum EstimateAction {
+    GET_CHECKOUT_BEFORE = "GET_CHECKOUT_BEFORE",
+    GET_CHECKOUT_AFTER = "GET_CHECKOUT_AFTER",
+    GET_CART_BEFORE = "GET_CART_BEFORE",
+    GET_CART_AFTER = "GET_CART_AFTER",
+    SLEEP = "DELAY",
+}
